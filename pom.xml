@@ -14,6 +14,28 @@
             <url>file:///${project.basedir}/local-maven-repo</url>
         </repository>
     </repositories>
+    <developers>
+        <developer>
+            <email>dnchembi_at_softmed_dot_co_dot_tz</email>
+            <name>Danford Nchembi</name>
+            <organization>SoftMed Technologies</organization>
+        </developer>
+        <developer>
+            <email>ilakozejumanne_at_softmed_dot_co_dot_tz</email>
+            <name>Ilakoze Jumanne</name>
+            <organization>SoftMed Technologies</organization>
+        </developer>
+        <developer>
+            <email>ibrahimmo_at_hhsc_dot_ca</email>
+            <name>Mohamed Ibrahim</name>
+            <organization>Hamilton Health Sciences</organization>
+        </developer>
+        <developer>
+            <email>khannani_at_hhsc_dot_ca</email>
+            <name>Nityan Khanna</name>
+            <organization>Hamilton Health Sciences</organization>
+        </developer>
+    </developers>
     <build>
         <plugins>
             <plugin>
@@ -41,7 +63,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>tz.go.moh.him.elmis.mediator.ffars.MediatorMain</mainClass>
+                                    <mainClass>tz.go.moh.him.govesb.mediator.MediatorMain</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
