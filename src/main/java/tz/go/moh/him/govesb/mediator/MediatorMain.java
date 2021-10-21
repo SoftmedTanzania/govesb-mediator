@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.openhim.mediator.engine.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -83,8 +84,14 @@ public class MediatorMain {
         config.setRoutingTable(buildRoutingTable());
         config.setStartupActors(buildStartupActorsConfig());
 
-        InputStream regInfo = MediatorMain.class.getClassLoader().getResourceAsStream("mediator-registration-info.json");
-        RegistrationConfig regConfig = new RegistrationConfig(regInfo);
+        InputStream registrationInformation = MediatorMain.class.getClassLoader().getResourceAsStream(MEDIATOR_REGISTRATION_INFO);
+
+        if (registrationInformation == null) {
+            throw new FileNotFoundException("Unable to locate " + MEDIATOR_REGISTRATION_INFO);
+        }
+
+        RegistrationConfig regConfig = new RegistrationConfig(registrationInformation);
+
         config.setRegistrationConfig(regConfig);
 
         if (config.getProperty("mediator.heartbeats") != null && "true".equalsIgnoreCase(config.getProperty("mediator.heartbeats"))) {
