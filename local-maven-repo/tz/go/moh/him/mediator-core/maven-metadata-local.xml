@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>tz.go.moh.him</groupId>
+  <artifactId>mediator-core</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20210111094800</lastUpdated>
+  </versioning>
+</metadata>
