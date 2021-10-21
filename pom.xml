@@ -97,6 +97,11 @@
             <artifactId>mediator-core</artifactId>
             <version>0.1.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>tz.go.govesb</groupId>
+            <artifactId>connector</artifactId>
+            <version>0.1.5-RELEASE</version>
+        </dependency>
         <!-- Testing dependencies -->
         <dependency>
             <groupId>junit</groupId>
