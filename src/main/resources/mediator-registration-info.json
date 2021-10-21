@@ -29,5 +29,57 @@
         }
       ]
     }
+  ],
+  "configDefs": [
+    {
+      "param": "govesbProperties",
+      "displayName": "Government Enterprise Service Bus Properties",
+      "description": "Configuration to set the client id, client-secret, access token uri, user-id, uri, privateKey and apiCode for authentication and communication with GOVESB",
+      "type": "struct",
+      "template": [
+        {
+          "param": "userId",
+          "displayName": "TanzaniHIM GOVESB's User Id",
+          "description": "TanzaniaHIM GOVESB's User id",
+          "type": "string"
+        },
+        {
+          "param": "clientId",
+          "displayName": "TanzaniHIM GOVESB's Client ID",
+          "description": "TanzaniHIM GOVESB's client id",
+          "type": "string"
+        },
+        {
+          "param": "clientSecret",
+          "displayName": "Client Secret",
+          "description": "Client Secret obtained in GOVESB",
+          "type": "password"
+        },
+        {
+          "param": "accessTokenUri",
+          "displayName": "Access Token URI",
+          "description": "The access token URI",
+          "type": "string"
+        },
+        {
+          "param": "govEsbUri",
+          "displayName": "GOVESB URI",
+          "description": "The URI for accessing GOVESB",
+          "type": "string"
+        },
+        {
+          "param": "govEsbApiCode",
+          "displayName": "GOVESB API Code",
+          "description": "The API Code",
+          "type": "string"
+        },
+        {
+          "param": "privateKey",
+          "displayName": "The System's Private Key",
+          "description": "The System's Private Key used while authenticating with GOVESB",
+          "type": "password"
+        }
+      ]
+    }
   ]
 }

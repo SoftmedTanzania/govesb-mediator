@@ -4,7 +4,9 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.json.JSONObject;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
@@ -42,25 +44,57 @@ public class DefaultOrchestrator extends UntypedActor {
             originalRequest = (MediatorHTTPRequest) msg;
             log.info("Received request: " + originalRequest.getHost() + " " + originalRequest.getMethod() + " " + originalRequest.getPath() + " " + originalRequest.getBody());
 
-            String client = config.getProperty("govesb.client.id");
-            String secret = config.getProperty("govesb.client-secret");
-            String user = config.getProperty("govesb.user.id");
+            String clientId;
+            String secret;
+            String userId;
+            String govEsbURI;
+            String apiCode;
+            String systemPrivateKey;
+            String tokenUri;
 
-            String govEsbURI = config.getProperty("govesb.uri");
-            String apiCode = config.getProperty("govesb.apiCode");
-            String systemPrivateKey = config.getProperty("system.private-key");
-            String tokenUri = config.getProperty("govesb.client.accessTokenUri");
+            if (config.getDynamicConfig().isEmpty()) {
+                log.debug("Dynamic config is empty, using config from mediator.properties");
 
+                clientId = config.getProperty("govesb.client.id");
+                secret = config.getProperty("govesb.client-secret");
+                userId = config.getProperty("govesb.user.id");
+
+
+                tokenUri = config.getProperty("govesb.client.accessTokenUri");
+                govEsbURI = config.getProperty("govesb.uri");
+                apiCode = config.getProperty("govesb.apiCode");
+                systemPrivateKey = config.getProperty("system.private-key");
+            } else {
+                log.debug("Using dynamic config");
+
+                JSONObject govesbProperties = new JSONObject(config.getDynamicConfig()).getJSONObject("govesbProperties");
+
+                userId = govesbProperties.getString("userId");
+                clientId = govesbProperties.getString("clientId");
+                secret = govesbProperties.getString("clientSecret");
+
+                tokenUri = govesbProperties.getString("accessTokenUri");
+                govEsbURI = govesbProperties.getString("govEsbUri");
+                apiCode = govesbProperties.getString("govEsbApiCode");
+                systemPrivateKey = govesbProperties.getString("privateKey");
+
+            }
 
             ObjectMapper mapper = new ObjectMapper();
 
             //Requesting token from GovESB
-            TokenResponse tokenResponse = GovESBTokenService.getEsbAccessToken(client, secret, tokenUri);
+            TokenResponse tokenResponse = GovESBTokenService.getEsbAccessToken(clientId, secret, tokenUri);
 
             log.info("TOKEN RETRIEVED \n" + mapper.writeValueAsString(tokenResponse.toString()));
 
-            String response = ESBHelper.esbRequest(apiCode, user, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
-            FinishRequest finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
+            String response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
+
+            FinishRequest finishRequest = null;
+            if (StringUtils.isBlank(response)) {
+                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
+            } else {
+                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
+            }
             ((MediatorHTTPRequest) msg).getRequestHandler().tell(finishRequest, getSelf());
         } else {
             unhandled(msg);

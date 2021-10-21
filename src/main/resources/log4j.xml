@@ -24,7 +24,7 @@
     </appender>
 
     <root>
-        <priority value="DEBUG"/>
+        <priority value="INFO"/>
         <appender-ref ref="ASYNC"/>
         <appender-ref ref="CONSOLE"/>
     </root>
