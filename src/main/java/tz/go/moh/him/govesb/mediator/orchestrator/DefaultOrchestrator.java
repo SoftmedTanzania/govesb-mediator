@@ -1,4 +1,4 @@
-package tz.go.moh.him.govesb.mediator;
+package tz.go.moh.him.govesb.mediator.orchestrator;
 
 import akka.actor.UntypedActor;
 import akka.event.Logging;
