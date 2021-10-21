@@ -7,8 +7,10 @@ import akka.testkit.JavaTestKit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONObject;
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
@@ -100,6 +102,25 @@ public class DefaultOrchestratorTest {
         return config;
     }
 
+    /**
+     * Adds dynamic configs to the mediator.
+     *
+     * @param mediatorConfig The mediator config.
+     */
+    public static void addDynamicConfigs(MediatorConfig mediatorConfig) {
+
+
+        mediatorConfig.getDynamicConfig().put("govesbProperties", new JSONObject("{\n" +
+                "    \"userId\": \"userId\",\n" +
+                "    \"clientId\": \"clientId\",\n" +
+                "    \"clientSecret\": \"secret\",\n" +
+                "    \"accessTokenUri\":\"tokenUri\",\n" +
+                "    \"govEsbUri\":\"uri\",\n" +
+                "    \"govEsbApiCode\":\"code\",\n" +
+                "    \"privateKey\":\"key\"\n" +
+                "  }"));
+    }
+
     @Before
     public void setUp() throws Exception {
     }
@@ -110,6 +131,7 @@ public class DefaultOrchestratorTest {
 
     @Test
     public void testMediatorHTTPRequest() throws Exception {
+        Assert.assertNotNull(system);
         new JavaTestKit(system) {{
             final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
 
@@ -133,8 +155,21 @@ public class DefaultOrchestratorTest {
             TokenResponse tokenResponse = new TokenResponse(true);
             tokenResponse.setAccess_token("access-token");
 
-            PowerMockito.doReturn(tokenResponse).when(GovESBTokenService.class, "getEsbAccessToken", any(), any(), any());
-            PowerMockito.doReturn("success").when(ESBHelper.class, "esbRequest", any(), any(), any(), any(), any(), any(), any());
+            ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> clientSecretCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> tokenURICaptor = ArgumentCaptor.forClass(String.class);
+            PowerMockito.doReturn(tokenResponse).when(GovESBTokenService.class, "getEsbAccessToken", clientIdCaptor.capture(), clientSecretCaptor.capture(), tokenURICaptor.capture());
+
+
+            ArgumentCaptor<String> apiCodeCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> accessTokenCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> esbBodyCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
+            PowerMockito.doReturn("success").when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(),userIdCaptor.capture(),accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
+
+
 
             defaultOrchestrator.tell(POST_Request, getRef());
 
@@ -156,6 +191,106 @@ public class DefaultOrchestratorTest {
                     foundResponse = true;
                 }
             }
+
+            //Verifying if the correct parameters were passed to GovESBTokenService.getEsbAccessToken()
+            Assert.assertEquals("client.id",clientIdCaptor.getValue());
+            Assert.assertEquals("client-secret",clientSecretCaptor.getValue());
+            Assert.assertEquals("accessTokenUri",tokenURICaptor.getValue());
+
+
+            //Verifying if the correct parameters were passed to ESBHelper.esbRequest()
+            Assert.assertEquals("apiCode",apiCodeCaptor.getValue());
+            Assert.assertEquals("id",userIdCaptor.getValue());
+            Assert.assertEquals("access-token",accessTokenCaptor.getValue());
+            Assert.assertEquals("test message",esbBodyCaptor.getValue());
+            Assert.assertEquals("private-key",keyCaptor.getValue());
+            Assert.assertEquals("uri",esbURICaptor.getValue());
+
+            assertTrue("Must send FinishRequest", foundResponse);
+        }};
+    }
+
+    @Test
+    public void testMediatorHTTPRequestWithDynamicConfig() throws Exception {
+        Assert.assertNotNull(system);
+        addDynamicConfigs(configuration);
+        new JavaTestKit(system) {{
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
+
+            MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
+                    getRef(),
+                    getRef(),
+                    "unit-test",
+                    "POST",
+                    "http",
+                    null,
+                    null,
+                    "/govesb",
+                    "test message",
+                    Collections.<String, String>singletonMap("Content-Type", "text/plain"),
+                    Collections.<Pair<String, String>>emptyList()
+            );
+
+            //Mocking static Methods
+            PowerMockito.mockStatic(ESBHelper.class);
+            PowerMockito.mockStatic(GovESBTokenService.class);
+
+            TokenResponse tokenResponse = new TokenResponse(true);
+            tokenResponse.setAccess_token("access-token");
+
+
+            //Stubbing the static methods and capturing the values passed
+            ArgumentCaptor<String> clientIdCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> clientSecretCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> tokenURICaptor = ArgumentCaptor.forClass(String.class);
+            PowerMockito.doReturn(tokenResponse).when(GovESBTokenService.class, "getEsbAccessToken", clientIdCaptor.capture(), clientSecretCaptor.capture(), tokenURICaptor.capture());
+
+
+            ArgumentCaptor<String> apiCodeCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> accessTokenCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> esbBodyCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
+
+            PowerMockito.doReturn("success").when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(),userIdCaptor.capture(),accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
+
+            defaultOrchestrator.tell(POST_Request, getRef());
+
+            final Object[] out =
+                    new ReceiveWhile<Object>(Object.class, duration("1 second")) {
+                        @Override
+                        protected Object match(Object msg) throws Exception {
+                            if (msg instanceof FinishRequest) {
+                                return msg;
+                            }
+                            throw noMatch();
+                        }
+                    }.get();
+
+            boolean foundResponse = false;
+
+            for (Object o : out) {
+                if (o instanceof FinishRequest) {
+                    foundResponse = true;
+                }
+            }
+
+
+            //Verifying if the correct parameters were passed to GovESBTokenService.getEsbAccessToken()
+            Assert.assertEquals("clientId",clientIdCaptor.getValue());
+            Assert.assertEquals("secret",clientSecretCaptor.getValue());
+            Assert.assertEquals("tokenUri",tokenURICaptor.getValue());
+
+
+            //Verifying if the correct parameters were passed to ESBHelper.esbRequest()
+            Assert.assertEquals("code",apiCodeCaptor.getValue());
+            Assert.assertEquals("userId",userIdCaptor.getValue());
+            Assert.assertEquals("access-token",accessTokenCaptor.getValue());
+            Assert.assertEquals("test message",esbBodyCaptor.getValue());
+            Assert.assertEquals("key",keyCaptor.getValue());
+            Assert.assertEquals("uri",esbURICaptor.getValue());
+
 
             assertTrue("Must send FinishRequest", foundResponse);
         }};
