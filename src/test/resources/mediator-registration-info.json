@@ -1,0 +1,33 @@
+{
+  "urn": "urn:uuid:6f220930-3265-11ec-9f31-6b29653de558",
+  "version": "0.1.0",
+  "name": "GOVESB Mediator",
+  "description": "An openHIM mediator for handling system integration between source systems via the Tanzania HIM and GOVESB",
+  "endpoints": [
+    {
+      "name": "GOVESB Mediator Route",
+      "host": "localhost",
+      "port": "3105",
+      "path": "/govesb",
+      "type": "http"
+    }
+  ],
+  "defaultChannelConfig": [
+    {
+      "name": "GOVESB Mediator",
+      "urlPattern": "^/govesb$",
+      "type": "http",
+      "allow": ["govesbmediator"],
+      "routes": [
+        {
+          "name": "GOVESB Mediator Route",
+          "host": "localhost",
+          "port": "3105",
+          "path": "/govesb",
+          "type": "http",
+          "primary": "true"
+        }
+      ]
+    }
+  ]
+}
