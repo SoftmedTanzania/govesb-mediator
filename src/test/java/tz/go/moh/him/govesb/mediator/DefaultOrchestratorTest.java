@@ -4,36 +4,41 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
-import org.openhim.mediator.engine.testing.MockLauncher;
-import org.openhim.mediator.engine.testing.TestingUtils;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import tz.go.govesb.helper.dtos.TokenResponse;
+import tz.go.govesb.helper.service.ESBHelper;
+import tz.go.govesb.helper.service.GovESBTokenService;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Properties;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+
+@PrepareForTest({GovESBTokenService.class, ESBHelper.class})
+@RunWith(PowerMockRunner.class)
 public class DefaultOrchestratorTest {
-    /**
-     * Represents the system actor.
-     */
-    static ActorSystem system;
 
     /**
      * Represents the configuration.
      */
     protected static MediatorConfig configuration;
+    /**
+     * Represents the system actor.
+     */
+    static ActorSystem system;
 
     /**
      * Runs initialization before each class execution.
@@ -46,70 +51,12 @@ public class DefaultOrchestratorTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-//        List<MockLauncher.ActorToLaunch> actorsToLaunch = new LinkedList<>();
-//
-//        actorsToLaunch.add(new MockLauncher.ActorToLaunch("http-connector", MockDestination.class));
-//
-//        TestingUtils.launchActors(system, configuration.getName(), actorsToLaunch);
     }
 
     @AfterClass
     public static void teardown() {
         JavaTestKit.shutdownActorSystem(system);
         system = null;
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void testMediatorHTTPRequest() throws Exception {
-        new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
-
-            MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
-                    getRef(),
-                    getRef(),
-                    "unit-test",
-                    "POST",
-                    "http",
-                    null,
-                    null,
-                    "/govesb",
-                    "test message",
-                    Collections.<String, String>singletonMap("Content-Type", "text/plain"),
-                    Collections.<Pair<String, String>>emptyList()
-            );
-
-            defaultOrchestrator.tell(POST_Request, getRef());
-
-            final Object[] out =
-                    new ReceiveWhile<Object>(Object.class, duration("1 second")) {
-                        @Override
-                        protected Object match(Object msg) throws Exception {
-                            if (msg instanceof FinishRequest) {
-                                return msg;
-                            }
-                            throw noMatch();
-                        }
-                    }.get();
-
-            boolean foundResponse = false;
-
-            for (Object o : out) {
-                if (o instanceof FinishRequest) {
-                    foundResponse = true;
-                }
-            }
-
-            assertTrue("Must send FinishRequest", foundResponse);
-        }};
     }
 
     /**
@@ -151,5 +98,66 @@ public class DefaultOrchestratorTest {
         config.setHeartbeatsEnabled(true);
 
         return config;
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void testMediatorHTTPRequest() throws Exception {
+        new JavaTestKit(system) {{
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
+
+            MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
+                    getRef(),
+                    getRef(),
+                    "unit-test",
+                    "POST",
+                    "http",
+                    null,
+                    null,
+                    "/govesb",
+                    "test message",
+                    Collections.<String, String>singletonMap("Content-Type", "text/plain"),
+                    Collections.<Pair<String, String>>emptyList()
+            );
+
+            PowerMockito.mockStatic(ESBHelper.class);
+            PowerMockito.mockStatic(GovESBTokenService.class);
+
+            TokenResponse tokenResponse = new TokenResponse(true);
+            tokenResponse.setAccess_token("access-token");
+
+            PowerMockito.doReturn(tokenResponse).when(GovESBTokenService.class, "getEsbAccessToken", any(), any(), any());
+            PowerMockito.doReturn("success").when(ESBHelper.class, "esbRequest", any(), any(), any(), any(), any(), any(), any());
+
+            defaultOrchestrator.tell(POST_Request, getRef());
+
+            final Object[] out =
+                    new ReceiveWhile<Object>(Object.class, duration("1 second")) {
+                        @Override
+                        protected Object match(Object msg) throws Exception {
+                            if (msg instanceof FinishRequest) {
+                                return msg;
+                            }
+                            throw noMatch();
+                        }
+                    }.get();
+
+            boolean foundResponse = false;
+
+            for (Object o : out) {
+                if (o instanceof FinishRequest) {
+                    foundResponse = true;
+                }
+            }
+
+            assertTrue("Must send FinishRequest", foundResponse);
+        }};
     }
 }
