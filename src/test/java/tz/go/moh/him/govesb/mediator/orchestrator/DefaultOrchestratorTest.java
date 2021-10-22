@@ -209,9 +209,11 @@ public class DefaultOrchestratorTest {
     @Test
     public void testMediatorHTTPRequestWithDynamicConfig() throws Exception {
         Assert.assertNotNull(system);
-        addDynamicConfigs(configuration);
+
+        MediatorConfig config = loadConfig(null);
+        addDynamicConfigs(config);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, config));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
