@@ -189,7 +189,7 @@ public class DefaultOrchestratorTest {
             }
 
             //Verifying if the correct parameters were passed to GovESBTokenService.getEsbAccessToken()
-            Assert.assertEquals("client.id", clientIdCaptor.getValue());
+            Assert.assertEquals("client-id", clientIdCaptor.getValue());
             Assert.assertEquals("client-secret", clientSecretCaptor.getValue());
             Assert.assertEquals("accessTokenUri", tokenURICaptor.getValue());
 
