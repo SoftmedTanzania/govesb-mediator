@@ -135,6 +135,15 @@
                     </execution>
                 </executions>
             </plugin>
+
+<!--            Required if you are running the mediator on JAVA 11-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-surefire-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <argLine>&#45;&#45;add-opens java.xml/jdk.xml.internal=ALL-UNNAMED</argLine>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
     <dependencies>
