@@ -89,8 +89,12 @@ public class DefaultOrchestrator extends UntypedActor {
 
             String response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
 
-            FinishRequest finishRequest = null;
-            if (StringUtils.isBlank(response)) {
+            JSONObject responseObject = new JSONObject(response);
+
+
+            boolean successStatus = responseObject.getJSONObject("data").getBoolean("success");
+            FinishRequest finishRequest;
+            if (StringUtils.isBlank(response) || !successStatus) {
                 finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
             } else {
                 finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
