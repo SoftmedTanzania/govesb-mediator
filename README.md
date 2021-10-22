@@ -1,5 +1,6 @@
 # GOVESB Mediator
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ffde7850d3640dda7efabf921a27be5)](https://app.codacy.com/gh/SoftmedTanzania/govesb-mediator?utm_source=github.com&utm_medium=referral&utm_content=SoftmedTanzania/govesb-mediator&utm_campaign=Badge_Grade_Settings)
 [![Java CI Badge](https://github.com/SoftmedTanzania/govesb-mediator/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/SoftmedTanzania/govesb-mediator/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Coverage Status](https://coveralls.io/repos/github/SoftmedTanzania/govesb-mediator/badge.svg?branch=development)](https://coveralls.io/github/SoftmedTanzania/govesb-mediator?branch=development)
 
