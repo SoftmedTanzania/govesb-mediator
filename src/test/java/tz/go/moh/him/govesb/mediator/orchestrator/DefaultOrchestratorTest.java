@@ -189,7 +189,7 @@ public class DefaultOrchestratorTest {
             }
 
             //Verifying if the correct parameters were passed to GovESBTokenService.getEsbAccessToken()
-            Assert.assertEquals("client.id", clientIdCaptor.getValue());
+            Assert.assertEquals("clientId", clientIdCaptor.getValue());
             Assert.assertEquals("client-secret", clientSecretCaptor.getValue());
             Assert.assertEquals("accessTokenUri", tokenURICaptor.getValue());
 
@@ -209,9 +209,11 @@ public class DefaultOrchestratorTest {
     @Test
     public void testMediatorHTTPRequestWithDynamicConfig() throws Exception {
         Assert.assertNotNull(system);
-        addDynamicConfigs(configuration);
+
+        MediatorConfig config = loadConfig(null);
+        addDynamicConfigs(config);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, config));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
