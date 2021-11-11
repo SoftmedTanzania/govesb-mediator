@@ -200,7 +200,7 @@ public class SendDataToGovesbOrchestratorTest {
             Assert.assertEquals("id", userIdCaptor.getValue());
             Assert.assertEquals("access-token", accessTokenCaptor.getValue());
             Assert.assertEquals("test message", esbBodyCaptor.getValue());
-            Assert.assertEquals("private-key", keyCaptor.getValue());
+            Assert.assertEquals("MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEon0az66Kz+6ZIz4G7La8uPeSbOT/E/suRjNMgFQ4isjJwFXaS20vHcndEFxXz8M68sbxkbLrGuNS/wFcEzubWQ==", keyCaptor.getValue());
             Assert.assertEquals("uri", esbURICaptor.getValue());
 
             assertTrue("Must send FinishRequest", foundResponse);

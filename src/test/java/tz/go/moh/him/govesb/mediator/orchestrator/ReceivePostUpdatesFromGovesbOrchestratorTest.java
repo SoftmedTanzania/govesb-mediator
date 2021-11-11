@@ -33,8 +33,6 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-@PrepareForTest({GovESBTokenService.class, ESBHelper.class})
-@RunWith(PowerMockRunner.class)
 public class ReceivePostUpdatesFromGovesbOrchestratorTest {
 
     /**
