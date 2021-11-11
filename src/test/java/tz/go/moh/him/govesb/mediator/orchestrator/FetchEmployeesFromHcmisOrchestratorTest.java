@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @PrepareForTest({GovESBTokenService.class, ESBHelper.class})
 @RunWith(PowerMockRunner.class)
-public class DefaultOrchestratorTest {
+public class FetchEmployeesFromHcmisOrchestratorTest {
 
     /**
      * Represents the configuration.
@@ -120,7 +120,8 @@ public class DefaultOrchestratorTest {
                 "    \"accessTokenUri\":\"tokenUri\",\n" +
                 "    \"govEsbUri\":\"uri\",\n" +
                 "    \"govEsbApiCode\":\"code\",\n" +
-                "    \"privateKey\":\"key\"\n" +
+                "    \"privateKey\":\"key\",\n" +
+                "    \"publicKey\":\"key\"\n" +
                 "  }"));
     }
 
@@ -128,7 +129,7 @@ public class DefaultOrchestratorTest {
     public void testMediatorHTTPRequest() throws Exception {
         Assert.assertNotNull(system);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(FetchEmployeesFromHcmisOrchestrator.class, configuration));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
@@ -213,7 +214,7 @@ public class DefaultOrchestratorTest {
         MediatorConfig config = loadConfig(null);
         addDynamicConfigs(config);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, config));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(FetchEmployeesFromHcmisOrchestrator.class, config));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),

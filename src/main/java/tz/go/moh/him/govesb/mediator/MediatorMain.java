@@ -6,7 +6,7 @@ import akka.event.LoggingAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openhim.mediator.engine.*;
-import tz.go.moh.him.govesb.mediator.orchestrator.DefaultOrchestrator;
+import tz.go.moh.him.govesb.mediator.orchestrator.FetchEmployeesFromHcmisOrchestrator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ public class MediatorMain {
      */
     private static RoutingTable buildRoutingTable() throws RoutingTable.RouteAlreadyMappedException {
         RoutingTable routingTable = new RoutingTable();
-        routingTable.addRoute("/govesb", DefaultOrchestrator.class);
+        routingTable.addRoute("/govesb", FetchEmployeesFromHcmisOrchestrator.class);
 
         return routingTable;
     }

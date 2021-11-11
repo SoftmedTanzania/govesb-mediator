@@ -15,7 +15,7 @@ import tz.go.govesb.helper.service.ESBHelper;
 import tz.go.govesb.helper.service.GovESBTokenService;
 import tz.go.govesb.helper.utils.DataFormatEnum;
 
-public class DefaultOrchestrator extends UntypedActor {
+public class FetchEmployeesFromHcmisOrchestrator extends UntypedActor {
     /**
      * The mediator configuration.
      */
@@ -30,11 +30,11 @@ public class DefaultOrchestrator extends UntypedActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     /**
-     * Initializes a new instance of the {@link DefaultOrchestrator} class.
+     * Initializes a new instance of the {@link FetchEmployeesFromHcmisOrchestrator} class.
      *
      * @param config The mediator configuration.
      */
-    public DefaultOrchestrator(MediatorConfig config) {
+    public FetchEmployeesFromHcmisOrchestrator(MediatorConfig config) {
         this.config = config;
     }
 
@@ -50,6 +50,7 @@ public class DefaultOrchestrator extends UntypedActor {
             String govEsbURI;
             String apiCode;
             String systemPrivateKey;
+            String govesbPublicKey;
             String tokenUri;
 
             if (config.getDynamicConfig().isEmpty()) {
@@ -64,6 +65,7 @@ public class DefaultOrchestrator extends UntypedActor {
                 govEsbURI = config.getProperty("govesb.uri");
                 apiCode = config.getProperty("govesb.apiCode");
                 systemPrivateKey = config.getProperty("system.private-key");
+                govesbPublicKey = config.getProperty("system.public-key");
             } else {
                 log.debug("Using dynamic config");
 
@@ -77,6 +79,7 @@ public class DefaultOrchestrator extends UntypedActor {
                 govEsbURI = govesbProperties.getString("govEsbUri");
                 apiCode = govesbProperties.getString("govEsbApiCode");
                 systemPrivateKey = govesbProperties.getString("privateKey");
+                govesbPublicKey = govesbProperties.getString("publicKey");
 
             }
 
@@ -89,12 +92,16 @@ public class DefaultOrchestrator extends UntypedActor {
 
             String response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
 
+            boolean verification = ESBHelper.verifySignedPayload(response, DataFormatEnum.json, govesbPublicKey);
+
             JSONObject responseObject = new JSONObject(response);
 
 
             boolean successStatus = responseObject.getJSONObject("data").getBoolean("success");
             FinishRequest finishRequest;
-            if (StringUtils.isBlank(response) || !successStatus) {
+            if (!verification) {
+                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_UNAUTHORIZED);
+            } else if (StringUtils.isBlank(response) || !successStatus) {
                 finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
             } else {
                 finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);

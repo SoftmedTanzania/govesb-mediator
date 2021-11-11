@@ -78,6 +78,12 @@
           "displayName": "The System's Private Key",
           "description": "The System's Private Key used while authenticating with GOVESB",
           "type": "password"
+        },
+        {
+          "param": "publicKey",
+          "displayName": "The GOVESB's Public Key",
+          "description": "The GOVESB's Public Key used while authenticating with GOVESB",
+          "type": "password"
         }
       ]
     }
