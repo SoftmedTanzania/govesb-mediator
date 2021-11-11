@@ -6,7 +6,6 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
@@ -18,7 +17,6 @@ import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
 import tz.go.govesb.helper.dtos.ResponseData;
 import tz.go.govesb.helper.service.ESBHelper;
 import tz.go.govesb.helper.utils.DataFormatEnum;
-import tz.go.moh.him.govesb.mediator.domain.GovesbAcknowledgement;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,6 +31,14 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
      * The mediator configuration.
      */
     private final MediatorConfig config;
+    /**
+     * GOVESB Public Key
+     */
+    public String govesbPublicKey;
+    /**
+     * The System Private Key
+     */
+    public String systemPrivateKey;
     /**
      * Represents a mediator request.
      */
@@ -74,8 +80,7 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
             String scheme;
             String username = "";
             String password = "";
-            String govesbPublicKey;
-            String systemPrivateKey;
+
 
             if (config.getDynamicConfig().isEmpty()) {
                 log.debug("Dynamic config is empty, using config from mediator.properties");
@@ -121,22 +126,9 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
             ResponseData responseData = ESBHelper.verifyAndExtractData(requestBody, DataFormatEnum.json, govesbPublicKey);
 
             if (responseData == null || !responseData.isHasData()) {
+                String response = ESBHelper.createResponse("{}", DataFormatEnum.json, systemPrivateKey, false, "Signature Verification Failed");
 
-                GovesbAcknowledgement.EsbAcknowledgement esbAcknowledgement = new GovesbAcknowledgement.EsbAcknowledgement();
-                esbAcknowledgement.setSuccess(false);
-                esbAcknowledgement.setMessage("Signature Verification Failed");
-                esbAcknowledgement.setStatusCode(SC_UNAUTHORIZED);
-
-                GovesbAcknowledgement.Data data = new GovesbAcknowledgement.Data();
-                data.setEsbBody(esbAcknowledgement);
-
-                String signature = ESBHelper.signPayload(new Gson().toJson(data), systemPrivateKey, null);
-
-                GovesbAcknowledgement govesbAcknowledgement = new GovesbAcknowledgement();
-                govesbAcknowledgement.setData(data);
-                govesbAcknowledgement.setSignature(signature);
-
-                FinishRequest finishRequest = new FinishRequest(new Gson().toJson(govesbAcknowledgement), "application/json", SC_UNAUTHORIZED);
+                FinishRequest finishRequest = new FinishRequest(response, "application/json", SC_UNAUTHORIZED);
                 ((MediatorHTTPRequest) msg).getRequestHandler().tell(finishRequest, getSelf());
             } else {
                 MediatorHTTPRequest request = new MediatorHTTPRequest(((MediatorHTTPRequest) msg).getRequestHandler(), getSelf(), host, "POST",
@@ -147,22 +139,19 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
             }
 
         } else if (msg instanceof MediatorHTTPResponse) {
-            GovesbAcknowledgement.EsbAcknowledgement esbAcknowledgement = new GovesbAcknowledgement.EsbAcknowledgement();
-            esbAcknowledgement.setSuccess(true);
-            esbAcknowledgement.setMessage(((MediatorHTTPResponse) msg).getBody());
+            ;
             int statusCode;
+            boolean success;
             if (((MediatorHTTPResponse) msg).getStatusCode() == SC_OK) {
-                esbAcknowledgement.setStatusCode(SC_OK);
                 statusCode = SC_OK;
+                success = true;
             } else {
-                esbAcknowledgement.setStatusCode(SC_BAD_REQUEST);
                 statusCode = SC_BAD_REQUEST;
+                success = false;
             }
 
-            GovesbAcknowledgement.Data data = new GovesbAcknowledgement.Data();
-            data.setEsbBody(esbAcknowledgement);
-
-            FinishRequest finishRequest = new FinishRequest(new Gson().toJson(data), "application/json", statusCode);
+            String response = ESBHelper.createResponse(((MediatorHTTPResponse) msg).getBody(), DataFormatEnum.json, systemPrivateKey, success, "");
+            FinishRequest finishRequest = new FinishRequest(response, "application/json", statusCode);
             originalRequest.getRequestHandler().tell(finishRequest, getSelf());
         } else {
             unhandled(msg);
