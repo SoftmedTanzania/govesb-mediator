@@ -5,25 +5,52 @@
   "description": "An openHIM mediator for handling system integration between source systems via the Tanzania HIM and GOVESB",
   "endpoints": [
     {
-      "name": "GOVESB Mediator Route",
+      "name": "Send Data to GOVESB Mediator Route",
       "host": "localhost",
       "port": "3105",
-      "path": "/govesb",
+      "path": "/send_to_govesb",
+      "type": "http"
+    },
+    {
+      "name": "Receive Post Updates from GOVESB Mediator Route",
+      "host": "localhost",
+      "port": "3105",
+      "path": "/receive_data_from_govesb",
       "type": "http"
     }
   ],
   "defaultChannelConfig": [
     {
-      "name": "GOVESB Mediator",
-      "urlPattern": "^/govesb$",
+      "name": "Send Data To GOVESB Channel",
+      "urlPattern": "^/send_to_govesb$",
       "type": "http",
-      "allow": ["govesbmediator"],
+      "allow": [
+        "govesb-role"
+      ],
       "routes": [
         {
-          "name": "GOVESB Mediator Route",
+          "name": "Send Data to GOVESB Mediator Route",
           "host": "localhost",
           "port": "3105",
-          "path": "/govesb",
+          "path": "/send_to_govesb",
+          "type": "http",
+          "primary": "true"
+        }
+      ]
+    },
+    {
+      "name": "Receive POST Updates from GOVESB Channel",
+      "urlPattern": "^/receive_data_from_govesb$",
+      "type": "http",
+      "allow": [
+        "govesb-role"
+      ],
+      "routes": [
+        {
+          "name": "Receive Post Updates from GOVESB Mediator Route",
+          "host": "localhost",
+          "port": "3105",
+          "path": "/receive_data_from_govesb",
           "type": "http",
           "primary": "true"
         }
@@ -83,6 +110,54 @@
           "param": "publicKey",
           "displayName": "The GOVESB's Public Key",
           "description": "The GOVESB's Public Key used while authenticating with GOVESB",
+          "type": "password"
+        }
+      ]
+    },
+    {
+      "param": "destinationConnectionProperties",
+      "displayName": "Destination Connection Properties",
+      "description": "Configuration to set the hostname, port and path for the destination server",
+      "type": "struct",
+      "template": [
+        {
+          "param": "destinationHost",
+          "displayName": "Destination Host Name",
+          "description": "IP address/hostname of the destination server. e.g 192.168.1.1",
+          "type": "string"
+        },
+        {
+          "param": "destinationPort",
+          "displayName": "Destination Port Number",
+          "description": "The port number of the destination server. e.g 8080",
+          "type": "number"
+        },
+        {
+          "param": "destinationPath",
+          "displayName": "Destination Path",
+          "description": "The destination path for receiving of data from the HIM. eg /hdr",
+          "type": "string"
+        },
+        {
+          "param": "destinationScheme",
+          "displayName": "Destination Scheme",
+          "description": "Whether the destination is using HTTP or HTTPS requests",
+          "type": "option",
+          "values": [
+            "http",
+            "https"
+          ]
+        },
+        {
+          "param": "destinationUsername",
+          "displayName": "Destination Username",
+          "description": "The destination username for receiving data from the HIM.",
+          "type": "string"
+        },
+        {
+          "param": "destinationPassword",
+          "displayName": "Destination Password",
+          "description": "The destination password for receiving data from the HIM.",
           "type": "password"
         }
       ]

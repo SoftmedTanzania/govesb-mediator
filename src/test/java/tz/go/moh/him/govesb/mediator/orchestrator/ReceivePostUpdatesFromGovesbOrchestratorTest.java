@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @PrepareForTest({GovESBTokenService.class, ESBHelper.class})
 @RunWith(PowerMockRunner.class)
-public class FetchEmployeesFromHcmisOrchestratorTest {
+public class ReceivePostUpdatesFromGovesbOrchestratorTest {
 
     /**
      * Represents the configuration.
@@ -129,7 +129,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
     public void testMediatorHTTPRequest() throws Exception {
         Assert.assertNotNull(system);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(FetchEmployeesFromHcmisOrchestrator.class, configuration));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendDataToGovesbOrchestrator.class, configuration));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
@@ -164,7 +164,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
             ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
             ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
 
-            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\",\"esbBody\":{}},\"signature\":\"MEUCIDmv6hOjd0416X1Pz7MSlTwjNku06Z+dPM0uCExMT91GAiEAg1T6Fd+WvR+sSroR71/mpvWwc9hZS3RS1jLqUBbMkL8=\"}";
+            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\"},\"signature\":\"signanature\"}";
             PowerMockito.doReturn(sampleResponse).when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(), userIdCaptor.capture(), accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
 
 
@@ -214,7 +214,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
         MediatorConfig config = loadConfig(null);
         addDynamicConfigs(config);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(FetchEmployeesFromHcmisOrchestrator.class, config));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendDataToGovesbOrchestrator.class, config));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
@@ -252,7 +252,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
             ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
             ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
 
-            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\",\"esbBody\":{}},\"signature\":\"MEUCIDmv6hOjd0416X1Pz7MSlTwjNku06Z+dPM0uCExMT91GAiEAg1T6Fd+WvR+sSroR71/mpvWwc9hZS3RS1jLqUBbMkL8=\"}";
+            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\"},\"signature\":\"signanature\"}";
             PowerMockito.doReturn(sampleResponse).when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(), userIdCaptor.capture(), accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
 
             defaultOrchestrator.tell(POST_Request, getRef());

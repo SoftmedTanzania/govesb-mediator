@@ -1,0 +1,80 @@
+{
+  "data": {
+    "esbBody": {
+      "pager": {
+        "pageSize": 50,
+        "page": 1,
+        "total": 200,
+        "nextPage": 2
+      },
+      "data": [
+        {
+          "checkNumber": "",
+          "nationalIdentification": "",
+          "formFourIndexNo": "",
+          "formSixIndexNo": "",
+          "employeeNationality": "",
+          "employeePhotograph": "",
+          "employeeFirstName": "",
+          "employeeMiddleName": "",
+          "employeeLastName": "",
+          "employeeSex": "",
+          "employeeBirthdate": "",
+          "employeeMobileNumber": "",
+          "employeeEmail": "",
+          "employeeDisability": "",
+          "educationLevels": [
+            {
+              "code": "",
+              "description": "",
+              "programCode": "",
+              "programDescription": "",
+              "startDate": "",
+              "endDate": ""
+            }
+          ],
+          "professionalEducationLevels": [
+            {
+              "code": "",
+              "description": "",
+              "startDate": "",
+              "endDate": ""
+            }
+          ],
+          "employeeServiceTerm": "",
+          "jobClass": {
+            "code": "",
+            "description": ""
+          },
+          "jobCode": {
+            "code": "",
+            "description": ""
+          },
+          "dutyPost": {
+            "code": "",
+            "description": ""
+          },
+          "department": {
+            "code": "",
+            "description": ""
+          },
+          "employeeHireDate": "",
+          "employeeConfirmationDate": "",
+          "organization": {
+            "code": "",
+            "description": ""
+          },
+          "employeeEmploymentStatus": "",
+          "employeeEmploymentStatusDescription": "",
+          "workStation": {
+            "code": "",
+            "description": ""
+          }
+        }
+      ]
+    },
+    "requestId": "6475958642c911ec989ab747256646aa",
+    "apiCode": "F2ZxK"
+  },
+  "signature": "MEUCIDmv6hOjd0416X1Pz7MSlTwjNku06Z+dPM0uCExMT91GAiEAg1T6Fd+WvR+sSroR71/mpvWwc9hZS3RS1jLqUBbMkL8="
+}

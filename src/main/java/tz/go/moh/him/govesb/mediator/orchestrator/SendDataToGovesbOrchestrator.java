@@ -16,7 +16,7 @@ import tz.go.govesb.helper.service.ESBHelper;
 import tz.go.govesb.helper.service.GovESBTokenService;
 import tz.go.govesb.helper.utils.DataFormatEnum;
 
-public class FetchEmployeesFromHcmisOrchestrator extends UntypedActor {
+public class SendDataToGovesbOrchestrator extends UntypedActor {
     /**
      * The mediator configuration.
      */
@@ -31,11 +31,11 @@ public class FetchEmployeesFromHcmisOrchestrator extends UntypedActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     /**
-     * Initializes a new instance of the {@link FetchEmployeesFromHcmisOrchestrator} class.
+     * Initializes a new instance of the {@link SendDataToGovesbOrchestrator} class.
      *
      * @param config The mediator configuration.
      */
-    public FetchEmployeesFromHcmisOrchestrator(MediatorConfig config) {
+    public SendDataToGovesbOrchestrator(MediatorConfig config) {
         this.config = config;
     }
 
