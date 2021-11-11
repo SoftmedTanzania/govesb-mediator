@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
+import tz.go.govesb.helper.dtos.ResponseData;
 import tz.go.govesb.helper.dtos.TokenResponse;
 import tz.go.govesb.helper.service.ESBHelper;
 import tz.go.govesb.helper.service.GovESBTokenService;
@@ -92,19 +93,20 @@ public class FetchEmployeesFromHcmisOrchestrator extends UntypedActor {
 
             String response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
 
-            boolean verification = ESBHelper.verifySignedPayload(response, DataFormatEnum.json, govesbPublicKey);
+            ResponseData responseData = ESBHelper.verifyAndExtractData(response, DataFormatEnum.json, govesbPublicKey);
 
-            JSONObject responseObject = new JSONObject(response);
-
-
-            boolean successStatus = responseObject.getJSONObject("data").getBoolean("success");
             FinishRequest finishRequest;
-            if (!verification) {
+            if (responseData == null || !responseData.isHasData()) {
                 finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_UNAUTHORIZED);
-            } else if (StringUtils.isBlank(response) || !successStatus) {
-                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
             } else {
-                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
+                JSONObject responseObject = new JSONObject(responseData.getVerifiedData());
+                boolean successStatus = responseObject.getJSONObject("data").getBoolean("success");
+
+                if (StringUtils.isBlank(response) || !successStatus) {
+                    finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
+                } else {
+                    finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
+                }
             }
             ((MediatorHTTPRequest) msg).getRequestHandler().tell(finishRequest, getSelf());
         } else {

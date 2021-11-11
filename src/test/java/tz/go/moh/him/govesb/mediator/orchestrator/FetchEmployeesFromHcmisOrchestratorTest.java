@@ -164,7 +164,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
             ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
             ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
 
-            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\"},\"signature\":\"signanature\"}";
+            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\",\"esbBody\":{}},\"signature\":\"MEUCIDmv6hOjd0416X1Pz7MSlTwjNku06Z+dPM0uCExMT91GAiEAg1T6Fd+WvR+sSroR71/mpvWwc9hZS3RS1jLqUBbMkL8=\"}";
             PowerMockito.doReturn(sampleResponse).when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(), userIdCaptor.capture(), accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
 
 
@@ -252,7 +252,7 @@ public class FetchEmployeesFromHcmisOrchestratorTest {
             ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
             ArgumentCaptor<String> esbURICaptor = ArgumentCaptor.forClass(String.class);
 
-            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\"},\"signature\":\"signanature\"}";
+            String sampleResponse = "{\"data\":{\"success\":true,\"requestId\":\"35ec0e9532fd11ec8536a1101a84e6e6\",\"message\":\"Success\",\"esbBody\":{}},\"signature\":\"MEUCIDmv6hOjd0416X1Pz7MSlTwjNku06Z+dPM0uCExMT91GAiEAg1T6Fd+WvR+sSroR71/mpvWwc9hZS3RS1jLqUBbMkL8=\"}";
             PowerMockito.doReturn(sampleResponse).when(ESBHelper.class, "esbRequest", apiCodeCaptor.capture(), userIdCaptor.capture(), accessTokenCaptor.capture(), esbBodyCaptor.capture(), any(), keyCaptor.capture(), esbURICaptor.capture());
 
             defaultOrchestrator.tell(POST_Request, getRef());
