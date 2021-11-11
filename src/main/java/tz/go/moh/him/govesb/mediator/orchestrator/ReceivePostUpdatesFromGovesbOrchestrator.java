@@ -139,7 +139,6 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
             }
 
         } else if (msg instanceof MediatorHTTPResponse) {
-            ;
             int statusCode;
             boolean success;
             if (((MediatorHTTPResponse) msg).getStatusCode() == SC_OK) {

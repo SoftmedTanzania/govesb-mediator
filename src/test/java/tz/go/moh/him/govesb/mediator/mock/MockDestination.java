@@ -12,12 +12,6 @@ import java.util.Map;
 public class MockDestination extends MockHTTPConnector {
 
     /**
-     * Initializes a new instance of the {@link MockDestination} class.
-     */
-    public MockDestination() {
-    }
-
-    /**
      * Gets the response.
      *
      * @return Returns the response.
