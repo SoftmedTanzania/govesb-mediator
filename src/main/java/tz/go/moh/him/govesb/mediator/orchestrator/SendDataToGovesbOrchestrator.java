@@ -4,7 +4,6 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.openhim.mediator.engine.MediatorConfig;
@@ -97,16 +96,10 @@ public class SendDataToGovesbOrchestrator extends UntypedActor {
 
             FinishRequest finishRequest;
             if (responseData == null || !responseData.isHasData()) {
-                finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_UNAUTHORIZED);
+                String errorResponse = ESBHelper.createResponse("{}", DataFormatEnum.json, systemPrivateKey, false, "SIGNATURE VERIFICATION FAILED");
+                finishRequest = new FinishRequest(errorResponse, "application/json", HttpStatus.SC_UNAUTHORIZED);
             } else {
-                JSONObject responseObject = new JSONObject(responseData.getVerifiedData());
-                boolean successStatus = responseObject.getJSONObject("data").getBoolean("success");
-
-                if (StringUtils.isBlank(response) || !successStatus) {
-                    finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_BAD_REQUEST);
-                } else {
-                    finishRequest = new FinishRequest(response, "application/json", HttpStatus.SC_OK);
-                }
+                finishRequest = new FinishRequest(responseData.getVerifiedData(), "application/json", HttpStatus.SC_OK);
             }
             ((MediatorHTTPRequest) msg).getRequestHandler().tell(finishRequest, getSelf());
         } else {
