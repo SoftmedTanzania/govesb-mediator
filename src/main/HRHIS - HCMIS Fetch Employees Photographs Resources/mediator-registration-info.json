@@ -7,15 +7,8 @@
     {
       "name": "Send Data to GOVESB Mediator Route",
       "host": "localhost",
-      "port": "3105",
+      "port": "3107",
       "path": "/send_to_govesb",
-      "type": "http"
-    },
-    {
-      "name": "Receive Post Updates from GOVESB Mediator Route",
-      "host": "localhost",
-      "port": "3105",
-      "path": "/receive_data_from_govesb",
       "type": "http"
     }
   ],
@@ -31,26 +24,8 @@
         {
           "name": "Send Data to GOVESB Mediator Route",
           "host": "localhost",
-          "port": "3105",
+          "port": "3107",
           "path": "/send_to_govesb",
-          "type": "http",
-          "primary": "true"
-        }
-      ]
-    },
-    {
-      "name": "Receive POST Updates from GOVESB Channel",
-      "urlPattern": "^/receive_data_from_govesb$",
-      "type": "http",
-      "allow": [
-        "govesb-role"
-      ],
-      "routes": [
-        {
-          "name": "Receive Post Updates from GOVESB Mediator Route",
-          "host": "localhost",
-          "port": "3105",
-          "path": "/receive_data_from_govesb",
           "type": "http",
           "primary": "true"
         }
