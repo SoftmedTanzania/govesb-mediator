@@ -15,7 +15,7 @@ import tz.go.govesb.helper.service.ESBHelper;
 import tz.go.govesb.helper.service.GovESBTokenService;
 import tz.go.govesb.helper.utils.DataFormatEnum;
 
-public class SendDataToGovesbOrchestrator extends UntypedActor {
+public class SendRequestToGovesbOrchestrator extends UntypedActor {
     /**
      * The mediator configuration.
      */
@@ -30,11 +30,11 @@ public class SendDataToGovesbOrchestrator extends UntypedActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     /**
-     * Initializes a new instance of the {@link SendDataToGovesbOrchestrator} class.
+     * Initializes a new instance of the {@link SendRequestToGovesbOrchestrator} class.
      *
      * @param config The mediator configuration.
      */
-    public SendDataToGovesbOrchestrator(MediatorConfig config) {
+    public SendRequestToGovesbOrchestrator(MediatorConfig config) {
         this.config = config;
     }
 

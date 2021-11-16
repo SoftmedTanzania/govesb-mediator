@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @PrepareForTest({GovESBTokenService.class, ESBHelper.class})
 @RunWith(PowerMockRunner.class)
-public class SendDataToGovesbOrchestratorTest {
+public class SendRequestToGovesbOrchestratorTest {
 
     /**
      * Represents the configuration.
@@ -129,7 +129,7 @@ public class SendDataToGovesbOrchestratorTest {
     public void testMediatorHTTPRequest() throws Exception {
         Assert.assertNotNull(system);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendDataToGovesbOrchestrator.class, configuration));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendRequestToGovesbOrchestrator.class, configuration));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
@@ -214,7 +214,7 @@ public class SendDataToGovesbOrchestratorTest {
         MediatorConfig config = loadConfig(null);
         addDynamicConfigs(config);
         new JavaTestKit(system) {{
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendDataToGovesbOrchestrator.class, config));
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(SendRequestToGovesbOrchestrator.class, config));
 
             MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
                     getRef(),
