@@ -13,12 +13,7 @@ Tanzania Enterprise Service Bus (GovESB).
 2. IntelliJ or Visual Studio Code
 3. Maven 3.6.3
 
-## 2. Mediator Configuration
-
-This mediator is designed to work with multiple systems that send JSON Payloads while communicating with the NHCR via
-the HIM and the HIM transforms the messages into HL7v2 messages before forwarding the requests to the NHCR
-
-### 3 Configuration Parameters
+### 2 Configuration Parameters
 
 The configuration parameters specific to the mediator and destination system can be found at
 
@@ -143,7 +138,7 @@ The configuration parameters specific to the mediator and the mediator's metadat
 
 ```
 
-## 4. Deployment
+## 3. Deployment
 
 To build and run the mediator after performing the above configurations, run the following
 
