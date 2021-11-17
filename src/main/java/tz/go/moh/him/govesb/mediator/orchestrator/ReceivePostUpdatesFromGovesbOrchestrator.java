@@ -149,7 +149,7 @@ public class ReceivePostUpdatesFromGovesbOrchestrator extends UntypedActor {
                 success = false;
             }
 
-            String response = ESBHelper.createResponse(((MediatorHTTPResponse) msg).getBody(), DataFormatEnum.json, systemPrivateKey, success, "");
+            String response = ESBHelper.createResponse(((MediatorHTTPResponse) msg).getBody(), DataFormatEnum.json, systemPrivateKey, success, ((MediatorHTTPResponse) msg).getBody());
             FinishRequest finishRequest = new FinishRequest(response, "application/json", statusCode);
             originalRequest.getRequestHandler().tell(finishRequest, getSelf());
         } else {
