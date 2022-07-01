@@ -89,6 +89,16 @@
           "type": "string"
         },
         {
+          "param": "requestType",
+          "displayName": "Request Type",
+          "description": "Whether the request type to GOVESB is PULL or PUSH",
+          "type": "option",
+          "values": [
+            "pull",
+            "push"
+          ]
+        },
+        {
           "param": "govEsbUri",
           "displayName": "GOVESB URI",
           "description": "The URI for accessing GOVESB",
@@ -96,8 +106,8 @@
         },
         {
           "param": "govEsbApiCode",
-          "displayName": "GOVESB API Code",
-          "description": "The API Code",
+          "displayName": "GOVESB API Code / Push Code",
+          "description": "The API Code or Push Code",
           "type": "string"
         },
         {

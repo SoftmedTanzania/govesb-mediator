@@ -49,6 +49,7 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
             String userId;
             String govEsbURI;
             String apiCode;
+            String requestType;
             String systemPrivateKey;
             String govesbPublicKey;
             String tokenUri;
@@ -66,6 +67,13 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
                 apiCode = config.getProperty("govesb.apiCode");
                 systemPrivateKey = config.getProperty("system.private-key");
                 govesbPublicKey = config.getProperty("system.public-key");
+
+                try {
+                    requestType = config.getProperty("govesb.requestType");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    requestType = "pull";
+                }
             } else {
                 log.debug("Using dynamic config");
 
@@ -80,6 +88,12 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
                 apiCode = govesbProperties.getString("govEsbApiCode");
                 systemPrivateKey = govesbProperties.getString("privateKey");
                 govesbPublicKey = govesbProperties.getString("publicKey");
+                try {
+                    requestType = govesbProperties.getString("requestType");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    requestType = "pull";
+                }
 
             }
 
@@ -90,7 +104,12 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
 
             log.info("TOKEN RETRIEVED \n" + mapper.writeValueAsString(tokenResponse.toString()));
 
-            String response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
+            String response;
+            if (requestType == null || requestType.equals("pull"))
+                response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
+            else
+                response = ESBHelper.esbPushRequest(apiCode, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
+
 
             ResponseData responseData = ESBHelper.verifyAndExtractData(response, DataFormatEnum.json, govesbPublicKey);
 
