@@ -50,7 +50,6 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
             String govEsbURI;
             String apiCode;
             String requestType;
-            String dataFormatType;
             String systemPrivateKey;
             String govesbPublicKey;
             String tokenUri;
@@ -62,7 +61,6 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
                 secret = config.getProperty("govesb.client-secret");
                 userId = config.getProperty("govesb.user.id");
 
-
                 tokenUri = config.getProperty("govesb.client.accessTokenUri");
                 govEsbURI = config.getProperty("govesb.uri");
                 apiCode = config.getProperty("govesb.apiCode");
@@ -71,11 +69,9 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
 
                 try {
                     requestType = config.getProperty("govesb.requestType");
-                    dataFormatType = config.getProperty("govesb.dataFormatType");
                 } catch (Exception e) {
                     e.printStackTrace();
                     requestType = "pull";
-                    dataFormatType = "json";
                 }
 
             } else {
@@ -92,14 +88,11 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
                 apiCode = govesbProperties.getString("govEsbApiCode");
                 systemPrivateKey = govesbProperties.getString("privateKey");
                 govesbPublicKey = govesbProperties.getString("publicKey");
-
                 try {
-                    requestType = config.getProperty("govesb.requestType");
-                    dataFormatType = config.getProperty("govesb.dataFormatType");
+                    requestType = govesbProperties.getString("requestType");
                 } catch (Exception e) {
                     e.printStackTrace();
                     requestType = "pull";
-                    dataFormatType = "json";
                 }
 
             }
@@ -114,16 +107,9 @@ public class SendRequestToGovesbOrchestrator extends UntypedActor {
 
             String response;
             if (requestType == null || requestType.equals("pull"))
-
-                if (dataFormatType.equals("json"))
-                    response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
-                else
-                    response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.xml, systemPrivateKey, govEsbURI);
+                response = ESBHelper.esbRequest(apiCode, userId, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
             else
-                if (dataFormatType.equals("json"))
-                    response = ESBHelper.esbPushRequest(apiCode, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
-                else
-                    response = ESBHelper.esbPushRequest(apiCode, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.xml, systemPrivateKey, govEsbURI);
+                response = ESBHelper.esbPushRequest(apiCode, tokenResponse.getAccess_token(), originalRequest.getBody(), DataFormatEnum.json, systemPrivateKey, govEsbURI);
 
 
             ResponseData responseData = ESBHelper.verifyAndExtractData(response, DataFormatEnum.json, govesbPublicKey);
