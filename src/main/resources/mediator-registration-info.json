@@ -99,16 +99,6 @@
           ]
         },
         {
-          "param": "dataFormatType",
-          "displayName": "Data Format Type",
-          "description": "Whether the data format type to GOVESB is JSON or XML",
-          "type": "option",
-          "values": [
-            "json",
-            "xml"
-          ]
-        },
-        {
           "param": "govEsbUri",
           "displayName": "GOVESB URI",
           "description": "The URI for accessing GOVESB",
